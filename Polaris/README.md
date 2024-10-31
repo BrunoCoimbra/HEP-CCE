@@ -31,8 +31,10 @@ TWOBYTWO_SIM=$WORK_DIR/2x2_sim
 # -B /usr/bin/time:$TWOBYTWO_SIM/tmp_bin/time
 apptainer shell \
 -B $WORK_DIR \
+-B /soft/xalt \
 -B /usr/bin/time:$TWOBYTWO_SIM/tmp_bin/time \
--B $WORK_DIR/from_nersc_mkramer:/dvs_ro/cfs/cdirs/dune/users/mkramer \
+-B $WORK_DIR/external_data/cvmfs:/cvmfs \
+-B $WORK_DIR/external_data/nersc_mkramer:/dvs_ro/cfs/cdirs/dune/users/mkramer \
 --env TWOBYTWO_SIM=$TWOBYTWO_SIM \
 /eagle/hep-cce/dune_2x2_sim/HEP-CCE/containers/images/dune_2x2_sim_base_container.sif
 ```
