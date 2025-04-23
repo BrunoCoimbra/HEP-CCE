@@ -11,3 +11,6 @@ From: almalinux:9
     # install utilities
     dnf install -y mlocate
     updatedb
+
+    # configure local user
+    useradd -u 36641 coimbra

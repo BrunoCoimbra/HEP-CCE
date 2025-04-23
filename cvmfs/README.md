@@ -1,24 +1,26 @@
 # Running CVMFS on HPC sites
 
 ## Frontier Squid
-HPC worker nodes typically don't have access to the internet, so they can't access the CVMFS repositories. To solve this problem, we can spawn a Frontier Squid on an edge node to cache CVMFS files. The worker nodes have access to the edge node, so they can access the CVMFS files through the Frontier Squid.
+HPC worker nodes may not provide access to CVMFS. To work around this limitation, we can use CVMFSEXEC to mount and access CVMFS on the worker nodes. Additionally, HPC worker nodes often have limited internet connectivity. While some sites provide local proxies to enable external access, if this is not an option, a Squid proxy server running in a container on an edge node can be used instead.
 
-### Running Frontier Squid with Apptainer
+### Setting up cvmfsexec
+```sh
+CVMFSEXEC_DIR=/eagle/hep-cce/cvmfsexec
+git clone https://github.com/cvmfs/cvmfsexec.git $CVMFSEXEC_DIR
+cd $CVMFSEXEC_DIR
+./makedist osg
+CVMFSEXEC=$CVMFSEXEC_DIR/cvmfsexec
+```
+
+### Running Frontier Squid with Apptainer (Optional)
 ```sh
 mkdir -p ~/scratch/squid/{cache,log}
 apptainer run --writable-tmpfs \
   -B ~/scratch/squid/cache:/var/cache/squid \
   -B ~/scratch/squid/log:/var/log/squid \
   docker://opensciencegrid/frontier-squid:3.6-release
-```
 
-### Setting up cvmfsexec
-```sh
-git clone https://github.com/cvmfs/cvmfsexec.git
-cd cvmfsexec
-./makedist osg
-echo "CVMFS_HTTP_PROXY=http://$(hostname -i):3128" > dist/etc/cvmfs/config.d/polaris.conf
-CVMFSEXEC=$(pwd)/cvmfsexec/cvmfsexec
+echo "CVMFS_HTTP_PROXY=http://$(hostname -i):3128" > $CVMFSEXEC_DIR/dist/etc/cvmfs/default.local
 ```
 
 ### Running cvmfsexec from the worker node
